@@ -1,55 +1,56 @@
-import React from 'react';
-import { Wrapper } from './ExoressoFeedback.styled.js';
+import {useState} from 'react';
+import { Wrapper } from './ExpressoFeedback.styled.js';
 import Section from '../Section/Section.jsx';
 
 import Controls from '../Controls';
 import Statistics from '../Statistics';
 import Notification from '../Notification';
 
-class Feedback extends React.Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
 
-  getFeedback = e => {
+export default function Feedback() {
+  const [good, setGood] = useState(0);
+  const [bad, setBad] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+
+
+  const getFeedback = e => {
     const {
       target: { name }
     } = e;
-    this.setState(prevState => {
-      return {
-        [name]: prevState[name] +1,
-      };
-    });
-  };
-  
-  counterFeedback = () => {
-    return this.state.good + this.state.neutral + this.state.bad;
-  };
-  counterPositivePercentage = () => {
-    return (100 / this.counterFeedback()) * this.state.good;
-  };
+   
+    switch (name) {
+      case 'good': setGood(good + 1);
+        break;
+      case 'bad': setBad(bad + 1);
+        break;
+      case 'neutral': setNeutral(neutral + 1);
+        break;
+      default: return;
+    };
+  }
 
-  render() {
-    const { good, neutral, bad } = this.state;
-
+   const counterFeedback = () => {
+     return good + neutral + bad;
+   };
+   const counterPositivePercentage = () => {
+     return (100 / counterFeedback()) * good;
+   };
     return (
       <Wrapper>
         <Section title="Please, leave feedback">
           <Controls
-            onFeedback={this.getFeedback}
+            onFeedback={getFeedback}
           />
         </Section>
         <Section title="Statistics">
-          {this.counterFeedback() ? (
+          {counterFeedback() ? (
             <>
               <Statistics
                 good={good}
                 neutral={neutral}
                 bad={bad}
-                total={this.counterFeedback()}
-                positivePercentage={this.counterPositivePercentage()}
+                total={counterFeedback()}
+                positivePercentage={counterPositivePercentage()}
               />
             </>
           ) : (
@@ -58,6 +59,5 @@ class Feedback extends React.Component {
         </Section>
       </Wrapper>
     );
+
   }
-}
-export default Feedback;
